@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using WebApplication2.Models;
 using WebApplication2.Interfaces;
 

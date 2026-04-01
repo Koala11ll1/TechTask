@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using WebApplication2.Models;
+﻿using WebApplication2.Models;
 using WebApplication2.Interfaces;
 
 namespace WebApplication2.Senders
@@ -15,5 +13,4 @@ namespace WebApplication2.Senders
             Console.WriteLine($"Email sent: {title}");
         }
     }
-
 }

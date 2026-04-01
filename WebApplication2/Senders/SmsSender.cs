@@ -1,11 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using WebApplication2.Models;
 using WebApplication2.Interfaces;
 
 namespace WebApplication2.Senders
 {
-
     public class SmsSender : INotificationSender
     {
         public NotificationChannel Channel => NotificationChannel.Sms;

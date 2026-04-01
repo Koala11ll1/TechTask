@@ -60,12 +60,11 @@ public class TicketsController : ControllerBase
     [HttpPost("{id:guid}/notify")]
     public async Task<IActionResult> Notify(Guid id)
     {
-        
         var updatedNotifications = await _notificationService.SendNotificationsAsync(id);
 
         if (updatedNotifications == null || !updatedNotifications.Any())
         {
-            return NotFound(new { message = "Сповіщень для цього тікета не знайдено." });
+            return NotFound(new { message = "Notification for this ticket not found" });
         }
 
         return Ok(updatedNotifications);

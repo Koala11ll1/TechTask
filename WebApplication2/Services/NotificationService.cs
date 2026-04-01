@@ -1,5 +1,4 @@
-﻿using WebApplication2.Data;
-using WebApplication2.Interfaces;
+﻿using WebApplication2.Interfaces;
 using WebApplication2.Models;
 
 namespace WebApplication2.Services;
@@ -17,7 +16,6 @@ public class NotificationService : INotificationService
 
     public async Task<List<Notification>> SendNotificationsAsync(Guid ticketId)
     {
-
         var ticket = _storage.Tickets.FirstOrDefault(t => t.Id == ticketId);
 
         var notifications = _storage.Notifications
