@@ -7,6 +7,7 @@ public class NotificationService : INotificationService
 {
     private readonly ITicketStorage _storage;
     private readonly IEnumerable<INotificationSender> _senders;
+    private const int MaxRetryAttempts = 3;
 
     public NotificationService(ITicketStorage storage, IEnumerable<INotificationSender> senders)
     {
@@ -26,7 +27,7 @@ public class NotificationService : INotificationService
 
         foreach (var notification in notifications)
         {
-            if (notification.Status != NotificationStatus.Sent && notification.Attempts < 3)
+            if (notification.Status != NotificationStatus.Sent && notification.Attempts < MaxRetryAttempts)
             {
                 var sender = _senders.FirstOrDefault(s => s.Channel == notification.Channel);
 
@@ -43,7 +44,7 @@ public class NotificationService : INotificationService
                     }
                     else
                     {
-                        notification.LastError = $"Сендер для каналу {notification.Channel} не зареєстрований.";
+                        notification.LastError = $"Sender for channel {notification.Channel} not registered.";
                     }
                 }
                 catch (Exception ex)

@@ -10,17 +10,14 @@ namespace WebApplication2
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
-            builder.Services.AddSingleton<ITicketStorage, InMemoryTicketStorage>();
             builder.Services.AddControllers();
-            builder.Services.AddScoped<INotificationService, NotificationService>();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
+            builder.Services.AddSingleton<ITicketStorage, InMemoryTicketStorage>();
             builder.Services.AddScoped<INotificationSender, EmailSender>();
             builder.Services.AddScoped<INotificationSender, SmsSender>();
             builder.Services.AddScoped<INotificationSender, PushSender>();
-
+            builder.Services.AddScoped<INotificationService, NotificationService>();
             var app = builder.Build();
 
             if (app.Environment.IsDevelopment())
@@ -30,9 +27,6 @@ namespace WebApplication2
             }
 
             app.UseHttpsRedirection();
-
-            app.UseAuthorization();
-
 
             app.MapControllers();
 
