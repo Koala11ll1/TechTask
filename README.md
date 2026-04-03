@@ -6,9 +6,9 @@ This is an educational project featuring a ticket management and multi-channel n
 
 * **Ticket Management**: Create tickets with automatic notification queue generation.
 * **Multi-channel Support**: Built-in support for sending notifications via Email, SMS, and Push.
-* **Retry Logic**: Automatic retry mechanism (up to 3 attempts) in case of delivery failures.
+* **Retry Logic**: Automatic retry mechanism in case of delivery failures.
 * **Idempotency**: Protection against duplicate sending of already delivered notifications.
-* **In-Memory Storage**: Uses a Singleton-based storage for database-less operation (ideal for testing and quick starts).
+* **In-Memory Storage**: Uses a Singleton-based storage for database-less operation.
 
 ## 🛠 Tech Stack
 
