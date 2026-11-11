@@ -1,0 +1,54 @@
+x-postgres: &postgres
+  build: ./docker
+  image: techtask-postgres:17
+  command:
+    - postgres
+    - -c
+    - wal_level=logical
+    - -c
+    - shared_preload_libraries=pg_cron
+    - -c
+    - cron.database_name=bank
+    - -c
+    - cron.timezone=UTC
+  healthcheck:
+    # саме по TCP: під час ініціалізації сервер слухає лише сокет,
+    # тож healthy настає після виконання всіх скриптів
+    test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U postgres -d bank"]
+    interval: 3s
+    timeout: 3s
+    retries: 40
+
+services:
+  primary:
+    <<: *postgres
+    environment:
+      POSTGRES_DB: bank
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      REPLICATION_PASSWORD: ${REPLICATION_PASSWORD:-replicator}
+    ports:
+      - "${PRIMARY_PORT:-5432}:5432"
+    volumes:
+      - primary-data:/var/lib/postgresql/data
+      - ./db/primary:/docker-entrypoint-initdb.d:ro
+
+  replica:
+    <<: *postgres
+    environment:
+      POSTGRES_DB: bank
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      REPLICATION_PASSWORD: ${REPLICATION_PASSWORD:-replicator}
+      PRIMARY_HOST: primary
+    ports:
+      - "${REPLICA_PORT:-5433}:5432"
+    volumes:
+      - replica-data:/var/lib/postgresql/data
+      - ./db/primary/01_t1_table.sql:/docker-entrypoint-initdb.d/01_t1_table.sql:ro
+      - ./db/replica/02_subscription.sql:/docker-entrypoint-initdb.d/02_subscription.sql:ro
+    depends_on:
+      primary:
+        condition: service_healthy
+
+volumes:
+  primary-data:
+  replica-data:
