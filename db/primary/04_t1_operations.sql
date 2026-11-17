@@ -1,4 +1,3 @@
--- 1000 клієнтів, у кожного один рахунок.
 create function t1_random_message()
 returns jsonb
 language sql
@@ -12,7 +11,6 @@ as $$
     from (select 1 + floor(random() * 1000)::int as client_id) as client;
 $$;
 
--- Оброблені операції, рівномірно розкидані по останньому p_period.
 create procedure t1_generate(p_rows integer default 100000, p_period interval default '4 months')
 language plpgsql
 as $$
@@ -28,14 +26,12 @@ begin
            1,
            t1_random_message()
     from generate_series(1, p_rows)
-    order by operation_date;  -- щоб id зростав разом із датою
+    order by operation_date;
 
-    -- тригер на вставку не реагує
     refresh materialized view t1_client_totals;
 end;
 $$;
 
--- Нова операція (state = 0) з випадковими даними.
 create function t1_add_operation()
 returns uuid
 language sql
@@ -45,7 +41,6 @@ as $$
     returning operation_guid;
 $$;
 
--- На парній секунді обробляє парні id, на непарній — непарні.
 create function t1_process_operations()
 returns bigint
 language sql

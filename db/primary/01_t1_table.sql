@@ -1,17 +1,13 @@
--- Таблиця t1. Виконується і на primary, і на replica:
--- логічна реплікація DDL не переносить.
-
 create extension if not exists pg_cron;
 
 create table t1 (
     id             bigint         generated always as identity,
     operation_date timestamptz    not null default now(),
     amount         numeric(18, 2) not null,
-    state          smallint       not null default 0,  -- 0 нова, 1 оброблена
+    state          smallint       not null default 0,
     operation_guid uuid           not null default gen_random_uuid(),
     message        jsonb          not null,
 
-    -- ключ партиціонування мусить входити в PK
     constraint t1_pkey primary key (id, operation_date),
     constraint t1_state_check check (state in (0, 1)),
     constraint t1_message_check check (
@@ -22,10 +18,8 @@ create table t1 (
     )
 ) partition by range (operation_date);
 
--- для завдання обробки: рядків зі state = 0 завжди одиниці
 create index t1_pending_idx on t1 (id) where state = 0;
 
--- Місячні партиції на проміжок [p_from, p_to]; наявні пропускає.
 create function t1_create_partitions(p_from timestamptz, p_to timestamptz)
 returns void
 language plpgsql
@@ -37,7 +31,6 @@ begin
     while v_month <= p_to loop
         v_partition := 't1_' || to_char(v_month at time zone 'UTC', 'YYYY_MM');
 
-        -- create table if not exists однаково брав би блокування на t1
         if to_regclass(v_partition) is null then
             execute format(
                 'create table %I partition of t1 for values from (%L) to (%L)',

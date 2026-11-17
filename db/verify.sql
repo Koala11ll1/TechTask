@@ -1,4 +1,3 @@
--- Перевірка на primary. Даних не змінює.
 
 \echo '-- партиції та обсяг даних'
 select tableoid::regclass       as partition,

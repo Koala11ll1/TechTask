@@ -1,7 +1,3 @@
--- Унікальність operation_guid.
--- Унікальний індекс на t1 мусив би містити operation_date, тобто той самий GUID
--- пройшов би з іншою датою. Тому GUID-и дублюються в окрему таблицю з PK.
-
 create table t1_operation_guid (
     operation_guid uuid primary key
 );
@@ -23,8 +19,6 @@ begin
 end;
 $$;
 
--- Саме after: перенесення рядка між партиціями — це delete + insert,
--- і before insert спрацював би раніше, ніж старий GUID буде видалено.
 create trigger t1_guid_insert
     after insert on t1
     for each row execute function t1_sync_operation_guid();
